@@ -1,0 +1,2 @@
+include ':app', ':andEngine'
+include ':andEnginePhysicsBox2DExtension'
