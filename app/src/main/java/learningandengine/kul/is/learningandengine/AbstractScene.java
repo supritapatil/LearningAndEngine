@@ -11,10 +11,10 @@ import org.andengine.util.debug.Debug;
  */
 public abstract class AbstractScene extends Scene{
     protected ResourceManager res = ResourceManager.getInstance();
-    protected GameActivity activity;
-    protected Engine engine;
-    protected Camera camera;
-    protected VertexBufferObjectManager vbom;
+    protected GameActivity activity = res.activity;
+    protected Engine engine = res.engine;
+    protected Camera camera = res.camera;
+    protected VertexBufferObjectManager vbom = res.vbom;
 
     public abstract  void  populate();
     public void destroy(){

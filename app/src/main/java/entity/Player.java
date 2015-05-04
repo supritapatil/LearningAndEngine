@@ -13,6 +13,7 @@ public class Player extends TiledSprite {
     public Player(float pX, float pY, ITiledTextureRegion pTiledTextureRegion, VertexBufferObjectManager pVertexBufferObjectManager) {
 
         super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
+        setCurrentTileIndex(8);
     }
 
     public boolean isDead() {

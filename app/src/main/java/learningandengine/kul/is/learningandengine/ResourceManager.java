@@ -1,7 +1,15 @@
 package learningandengine.kul.is.learningandengine;
 
+import android.graphics.Typeface;
+
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -13,6 +21,7 @@ import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.adt.color.Color;
 
 /**
  * Created by pradipp on 02-05-2015.
@@ -29,14 +38,42 @@ public class ResourceManager
     public ITextureRegion cloud1TextureRegion;
     public ITextureRegion cloud2TextureRegion;
     public ITextureRegion platformTextureRegion;
+    public Sound soundFall;
+    public Sound soundJump;
+    public Music music;
 
+    public Font font;
     public BuildableBitmapTextureAtlas gameTextureAtlas;
 
+    public void loadFont() {
+        font = FontFactory.createStroke(activity.getFontManager(), activity.getTextureManager(), 256, 256,
+                Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD), 50, true, Color.WHITE_ABGR_PACKED_INT,
+                2, Color.BLACK_ABGR_PACKED_INT);
+        font.load();
+    }
+
+    public void loadGameAudio() {
+        try {
+            SoundFactory.setAssetBasePath("sfx/");
+            soundJump = SoundFactory.createSoundFromAsset(activity.getSoundManager(),activity,"jump.mp3");
+            soundFall = SoundFactory.createSoundFromAsset(activity.getSoundManager(),activity,"fall.mp3");
+
+            MusicFactory.setAssetBasePath("mfx/");
+            music = MusicFactory.createMusicFromAsset(activity.getMusicManager(),activity,"music.mp3");
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while loading audio",e);
+        }
+
+
+    }
     public void loadGameGraphics(){
     BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+
         gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(),1024,512, BitmapTextureFormat.RGBA_8888, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas,activity.getAssets(),"player.png",7,3);
-        enemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity.getAssets(), "enemy.png", 1, 1);
+        enemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity.getAssets(), "enemies_spritesheet.png", 6, 5);
+       // enemyTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity.getAssets(),"enemies_spritesheet.png",);
         platformTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity.getAssets(), "platform.png");
         cloud1TextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity.getAssets(), "cloud1.png");
         cloud2TextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity.getAssets(), "cloud2.png");

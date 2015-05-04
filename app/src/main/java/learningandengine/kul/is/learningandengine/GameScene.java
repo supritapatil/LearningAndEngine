@@ -1,8 +1,13 @@
 package learningandengine.kul.is.learningandengine;
 
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.background.EntityBackground;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
+import org.andengine.util.adt.align.HorizontalAlign;
 
 import entity.Player;
 import factory.PlayerFactory;
@@ -12,11 +17,27 @@ import factory.PlayerFactory;
  */
 public class GameScene extends AbstractScene {
     private Player player;
+    private Text scoreText;
+    private AnimatedSprite fly;
 
     @Override
     public void populate() {
         createBackground();
         creatPlayer();
+        createHUD();
+
+        fly = new AnimatedSprite(240,200,res.enemyTextureRegion,vbom);
+        fly.animate(125);
+        attachChild(fly);
+    }
+
+
+    private void createHUD() {
+        HUD hud = new HUD();
+        scoreText = new Text(16,784, res.font,"0123456789", new TextOptions(HorizontalAlign.LEFT),vbom);
+        scoreText.setAnchorCenter(0,1);
+        hud.attachChild(scoreText);
+        camera.setHUD(hud);
     }
 
     private void creatPlayer() {
@@ -25,6 +46,7 @@ public class GameScene extends AbstractScene {
     }
 
     public GameScene() {
+
         PlayerFactory.getInstance().create(vbom);
     }
 
