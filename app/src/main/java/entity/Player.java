@@ -1,6 +1,7 @@
 package entity;
 
 import org.andengine.entity.sprite.TiledSprite;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
@@ -42,4 +43,15 @@ public class Player extends TiledSprite {
         setCurrentTileIndex(2);
     }
 
+    @Override
+    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+        if (pSceneTouchEvent.isActionDown()) {
+            clearEntityModifiers();
+            return true;
+        }else if(pSceneTouchEvent.isActionMove()) {
+            setPosition(pSceneTouchEvent.getX(),pSceneTouchEvent.getY());
+            return true;
+        }
+        return false;
+    }
 }
