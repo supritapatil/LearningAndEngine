@@ -1,5 +1,9 @@
 package learningandengine.kul.is.learningandengine;
 
+import android.hardware.SensorManager;
+
+import com.badlogic.gdx.math.Vector2;
+
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.collision.CollisionHandler;
 import org.andengine.engine.handler.collision.ICollisionCallback;
@@ -15,6 +19,7 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
+import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
@@ -28,11 +33,13 @@ import factory.PlayerFactory;
 /**
  * Created by pradipp on 02-05-2015.
  */
-public class GameScene extends AbstractScene implements IAccelerationListener{
+public class GameScene extends AbstractScene implements IAccelerationListener {
     private Player player;
     private Text scoreText;
     private AnimatedSprite fly;
     float lastX = 0;
+    private PhysicsWorld physicsWorld;
+
 
     @Override
     public void populate() {
@@ -40,26 +47,27 @@ public class GameScene extends AbstractScene implements IAccelerationListener{
         creatPlayer();
         createHUD();
 
-        fly = new AnimatedSprite(240,200,res.enemyTextureRegion,vbom);
-        fly.animate(new long[]{100,200}, new int[]{1,0});
+        fly = new AnimatedSprite(240, 200, res.enemyTextureRegion, vbom);
+        fly.animate(new long[]{100, 200}, new int[]{1, 0});
         //fly.registerEntityModifier(new LoopEntityModifier(new RotationModifier(2,0,360)));
         attachChild(fly);
         registerTouchArea(player);
-        engine.enableAccelerationSensor(activity,this);
+        engine.enableAccelerationSensor(activity, this);
+        registerUpdateHandler(physicsWorld);
         ICollisionCallback myICollisionCallback = new ICollisionCallback() {
             @Override
             public boolean onCollision(IShape pCheckShape, IShape pTargetShape) {
                 fly.setColor(Color.RED);
-              //  ResourceManager.getInstance().soundFall.setLoopCount(1);
-               // ResourceManager.getInstance().soundFall.play();
+                //  ResourceManager.getInstance().soundFall.setLoopCount(1);
+                // ResourceManager.getInstance().soundFall.play();
 
                 return false;
             }
 
         };
 
-        CollisionHandler myCollisionHandler = new CollisionHandler(myICollisionCallback,fly,player);
-        registerUpdateHandler(myCollisionHandler);
+        CollisionHandler myCollisionHandler = new CollisionHandler(myICollisionCallback, fly, player);
+        //  registerUpdateHandler(myCollisionHandler);
        /* setOnSceneTouchListener(new IOnSceneTouchListener() {
             @Override
             public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
@@ -76,29 +84,30 @@ public class GameScene extends AbstractScene implements IAccelerationListener{
 
     private void createHUD() {
         HUD hud = new HUD();
-        scoreText = new Text(16,784, res.font,"0123456789", new TextOptions(HorizontalAlign.LEFT),vbom);
-        scoreText.setAnchorCenter(0,1);
+        scoreText = new Text(16, 784, res.font, "0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+        scoreText.setAnchorCenter(0, 1);
         hud.attachChild(scoreText);
         camera.setHUD(hud);
     }
 
     private void creatPlayer() {
-        player = PlayerFactory.getInstance().createPlayer(240,400);
+        player = PlayerFactory.getInstance().createPlayer(240, 400);
         attachChild(player);
     }
 
     public GameScene() {
-
-        PlayerFactory.getInstance().create(vbom);
+        super();
+        physicsWorld = new PhysicsWorld(new Vector2(0,-SensorManager.GRAVITY_EARTH * 4),false);
+        PlayerFactory.getInstance().create(vbom,physicsWorld);
     }
 
     private void createBackground() {
         Entity background = new Entity();
-        Sprite cloud1 = new Sprite(200, 300, res.cloud1TextureRegion,vbom);
-        Sprite cloud2 = new Sprite(300, 600, res.cloud2TextureRegion,vbom);
+        Sprite cloud1 = new Sprite(200, 300, res.cloud1TextureRegion, vbom);
+        Sprite cloud2 = new Sprite(300, 600, res.cloud2TextureRegion, vbom);
         background.attachChild(cloud1);
         background.attachChild(cloud2);
-        setBackground(new EntityBackground(0.82f,0.96f,0.97f,background));
+        setBackground(new EntityBackground(0.82f, 0.96f, 0.97f, background));
     }
 
     @Override
@@ -118,17 +127,17 @@ public class GameScene extends AbstractScene implements IAccelerationListener{
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        if(Math.abs(pAccelerationData.getX()-lastX) >0.5) {
-            if(pAccelerationData.getX()>0) {
+        if (Math.abs(pAccelerationData.getX() - lastX) > 0.5) {
+            if (pAccelerationData.getX() > 0) {
                 Debug.i("accerlation x gt 0 is" + pAccelerationData.getX());
                 player.turnRight();
-            }else {
-                Debug.i("accerlation x lt 0 is"+pAccelerationData.getX());
+            } else {
+                Debug.i("accerlation x lt 0 is" + pAccelerationData.getX());
                 player.turnLeft();
             }
             lastX = pAccelerationData.getX();
-            Debug.i("lastx is "+lastX);
+            Debug.i("lastx is " + lastX);
         }
-        player.setX(player.getX()+pAccelerationData.getX());
+        //  player.setX(player.getX() + pAccelerationData.getX());
     }
 }
